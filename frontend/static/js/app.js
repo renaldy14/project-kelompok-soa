@@ -55,7 +55,7 @@ async function loadProducts() {
   productTable.appendChild(loadingRow);
 
   try {
-    const products = await requestAPI(API_URL);
+    const { data: products } = await requestAPI(API_URL);
 
     productTable.innerHTML = "";
 

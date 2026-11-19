@@ -1,14 +1,83 @@
 import os
 
+import psycopg2
 from database import get_db_connection
 from flask import Flask, jsonify, render_template, request
 from psycopg2.extras import RealDictCursor
+from werkzeug.exceptions import HTTPException
 
 base_dir = os.path.abspath(os.path.dirname(__file__))
 template_dir = os.path.join(base_dir, "..", "frontend", "templates")
 static_dir = os.path.join(base_dir, "..", "frontend", "static")
 
 app = Flask(__name__, template_folder=template_dir, static_folder=static_dir)
+
+MAX_TEXT_LENGTH = 100
+MAX_QUANTITY = 2147483647
+HTTP_ERROR_MESSAGES = {
+    404: "Endpoint tidak ditemukan",
+    405: "Metode HTTP tidak diizinkan",
+}
+
+
+def api_response(message, data=None, status=200):
+    return jsonify({"message": message, "data": data}), status
+
+
+def read_product_values():
+    data = request.get_json(silent=True)
+
+    if not isinstance(data, dict):
+        return None, "Request body harus berupa JSON object"
+
+    product_name = data.get("product_name")
+    category = data.get("category")
+    quantity = data.get("quantity")
+
+    if not isinstance(product_name, str) or not product_name.strip():
+        return None, "Nama barang wajib diisi"
+
+    if not isinstance(category, str) or not category.strip():
+        return None, "Kategori wajib diisi"
+
+    if not isinstance(quantity, int) or isinstance(quantity, bool):
+        return None, "Quantity harus berupa bilangan bulat"
+
+    product_name = product_name.strip()
+    category = category.strip()
+
+    if len(product_name) > MAX_TEXT_LENGTH:
+        return None, f"Nama barang maksimal {MAX_TEXT_LENGTH} karakter"
+
+    if len(category) > MAX_TEXT_LENGTH:
+        return None, f"Kategori maksimal {MAX_TEXT_LENGTH} karakter"
+
+    if quantity < 0:
+        return None, "Quantity tidak boleh kurang dari 0"
+
+    if quantity > MAX_QUANTITY:
+        return None, f"Quantity maksimal {MAX_QUANTITY}"
+
+    return (product_name, category, quantity), None
+
+
+@app.errorhandler(HTTPException)
+def handle_http_error(error):
+    message = HTTP_ERROR_MESSAGES.get(error.code, error.description)
+    return api_response(message, status=error.code)
+
+
+@app.errorhandler(psycopg2.OperationalError)
+def handle_database_outage(error):
+    app.logger.error("Database tidak tersedia: %s", error)
+    return api_response("Database tidak tersedia", status=503)
+
+
+@app.errorhandler(Exception)
+def handle_unexpected_error(error):
+    app.logger.exception("Kesalahan tidak terduga")
+    return api_response("Terjadi kesalahan pada server", status=500)
+
 
 # =====================================
 # 0. HALAMAN UTAMA
@@ -41,7 +110,7 @@ def get_products():
 
         cur.close()
 
-        return jsonify(products), 200
+        return api_response("Daftar barang berhasil diambil", products)
 
     finally:
         conn.close()
@@ -66,9 +135,9 @@ def get_product(product_id):
         cur.close()
 
         if product is None:
-            return jsonify({"message": "Product not found"}), 404
+            return api_response("Product not found", status=404)
 
-        return jsonify(product), 200
+        return api_response("Detail barang berhasil diambil", product)
 
     finally:
         conn.close()
@@ -81,26 +150,10 @@ def get_product(product_id):
 
 @app.route("/api/products", methods=["POST"])
 def create_product():
-    data = request.get_json(silent=True)
+    values, error = read_product_values()
 
-    if not isinstance(data, dict):
-        return jsonify({"message": "Request body harus berupa JSON object"}), 400
-
-    product_name = data.get("product_name")
-    category = data.get("category")
-    quantity = data.get("quantity")
-
-    if not isinstance(product_name, str) or not product_name.strip():
-        return jsonify({"message": "Nama barang wajib diisi"}), 400
-
-    if not isinstance(category, str) or not category.strip():
-        return jsonify({"message": "Kategori wajib diisi"}), 400
-
-    if not isinstance(quantity, int) or isinstance(quantity, bool):
-        return jsonify({"message": "Quantity harus berupa bilangan bulat"}), 400
-
-    if quantity < 0:
-        return jsonify({"message": "Quantity tidak boleh kurang dari 0"}), 400
+    if error:
+        return api_response(error, status=400)
 
     conn = get_db_connection()
 
@@ -114,7 +167,7 @@ def create_product():
             VALUES (%s, %s, %s)
             RETURNING *
         """,
-            (product_name.strip(), category.strip(), quantity),
+            values,
         )
 
         product = cur.fetchone()
@@ -122,9 +175,7 @@ def create_product():
 
         cur.close()
 
-        return jsonify(
-            {"message": "Product created successfully", "data": product}
-        ), 201
+        return api_response("Product created successfully", product, 201)
 
     finally:
         conn.close()
@@ -137,26 +188,10 @@ def create_product():
 
 @app.route("/api/products/<int:product_id>", methods=["PUT"])
 def update_product(product_id):
-    data = request.get_json(silent=True)
+    values, error = read_product_values()
 
-    if not isinstance(data, dict):
-        return jsonify({"message": "Request body harus berupa JSON object"}), 400
-
-    product_name = data.get("product_name")
-    category = data.get("category")
-    quantity = data.get("quantity")
-
-    if not isinstance(product_name, str) or not product_name.strip():
-        return jsonify({"message": "Nama barang wajib diisi"}), 400
-
-    if not isinstance(category, str) or not category.strip():
-        return jsonify({"message": "Kategori wajib diisi"}), 400
-
-    if not isinstance(quantity, int) or isinstance(quantity, bool):
-        return jsonify({"message": "Quantity harus berupa bilangan bulat"}), 400
-
-    if quantity < 0:
-        return jsonify({"message": "Quantity tidak boleh kurang dari 0"}), 400
+    if error:
+        return api_response(error, status=400)
 
     conn = get_db_connection()
 
@@ -172,21 +207,19 @@ def update_product(product_id):
             WHERE id = %s
             RETURNING *
         """,
-            (product_name.strip(), category.strip(), quantity, product_id),
+            (*values, product_id),
         )
 
         product = cur.fetchone()
 
         if product is None:
             conn.rollback()
-            return jsonify({"message": "Product not found"}), 404
+            return api_response("Product not found", status=404)
 
         conn.commit()
         cur.close()
 
-        return jsonify(
-            {"message": "Product updated successfully", "data": product}
-        ), 200
+        return api_response("Product updated successfully", product)
 
     finally:
         conn.close()
@@ -217,12 +250,12 @@ def delete_product(product_id):
 
         if deleted_product is None:
             conn.rollback()
-            return jsonify({"message": "Product not found"}), 404
+            return api_response("Product not found", status=404)
 
         conn.commit()
         cur.close()
 
-        return jsonify({"message": "Product deleted successfully"}), 200
+        return api_response("Product deleted successfully")
 
     finally:
         conn.close()

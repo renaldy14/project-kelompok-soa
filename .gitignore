@@ -6,3 +6,5 @@ pyproject.toml
 uv.lock
 .pytest_cache/
 test-results/
+.claude/
+.DS_Store

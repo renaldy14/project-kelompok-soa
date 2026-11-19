@@ -6,7 +6,7 @@ Project kelompok mata kuliah Service Oriented Architecture dengan tema Simple RE
 
 Sistem Manajemen Inventaris adalah aplikasi web untuk mencatat data barang, yang terdiri dari nama barang, kategori, dan jumlah. Aplikasi ini memiliki satu layanan, yaitu Product Service, yang dibangun dengan Python dan Flask pada berkas `backend/app.py`. Layanan ini menyediakan REST API di alamat `/api/products` untuk menampilkan, menambah, mengubah, dan menghapus barang. Sebelum menyimpan data, Product Service memeriksa bahwa nama barang dan kategori sudah diisi dan tidak lebih dari 100 karakter, serta jumlah berupa bilangan bulat dari 0 sampai 2147483647. Setiap respons endpoint barang memakai format JSON yang sama, berisi `message` dan `data`. Format ini juga dipakai saat alamat tidak ditemukan, metode HTTP tidak didukung, atau database tidak dapat dihubungi.
 
-Product Service terhubung ke PostgreSQL melalui `backend/database.py`, yang mengambil pengaturan koneksi dari berkas `.env`. Data barang tersimpan pada tabel `products` di database `db_soa`. Flask juga menyajikan antarmuka web yang dibuat dengan HTML, CSS, dan JavaScript. Antarmuka ini tidak mengakses database secara langsung: JavaScript mengirim permintaan ke REST API dengan `fetch`, lalu menampilkan hasilnya sebagai tabel barang dan pesan status. Kontrak API ditulis dalam format OpenAPI pada `backend/openapi.json` dan dapat dibaca melalui Swagger UI di `/api/docs`. Folder `bruno` berisi koleksi request untuk menguji endpoint, sedangkan folder `tests` berisi pengujian otomatis untuk API dan tampilan web.
+Product Service terhubung ke PostgreSQL melalui `backend/database.py`, yang mengambil pengaturan koneksi dari berkas `.env`. Data barang tersimpan pada tabel `products` di database `db_soa`. Flask juga menyajikan antarmuka web yang dibuat dengan HTML, CSS, dan JavaScript. Antarmuka ini tidak mengakses database secara langsung: JavaScript mengirim permintaan ke REST API dengan `fetch`, lalu menampilkan hasilnya sebagai tabel barang dan pesan status. Kontrak API ditulis dalam format OpenAPI pada `backend/openapi.json` dan dapat dibaca melalui Swagger UI di `/api/docs`. Folder `api-requests` berisi koleksi request Bruno untuk menguji endpoint, sedangkan folder `tests` berisi pengujian otomatis untuk API dan tampilan web.
 
 ## Tampilan Aplikasi
 
@@ -44,7 +44,7 @@ Setelah server berjalan, URL berikut dapat diakses. Ganti `{id}` dengan id baran
 | 7 | PUT | `http://127.0.0.1:5001/api/products/{id}` | Mengubah barang |
 | 8 | DELETE | `http://127.0.0.1:5001/api/products/{id}` | Menghapus barang |
 
-URL dengan metode GET dapat dibuka langsung di browser. POST, PUT, dan DELETE diuji dengan Bruno: buka folder `bruno` sebagai collection, lalu pilih environment `local`. POST dan PUT memakai body JSON seperti ini:
+URL dengan metode GET dapat dibuka langsung di browser. POST, PUT, dan DELETE diuji dengan Bruno: buka folder `api-requests` sebagai collection, lalu pilih environment `local`. POST dan PUT memakai body JSON seperti ini:
 
 ```json
 {

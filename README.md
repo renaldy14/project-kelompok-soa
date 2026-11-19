@@ -26,8 +26,8 @@ Halaman `/api/docs` menampilkan lima operasi pada endpoint barang beserta skema 
 
 | No | Nama | NIM |
 | --- | --- | --- |
-| 1 |  |  |
-| 2 |  |  |
-| 3 |  |  |
-| 4 |  |  |
-| 5 |  |  |
+| 1 | Steven Setiawan  | 32230107 |
+| 2 | Kenisha Ellen | 32230114  |
+| 3 | Renaldy Runtulalo | 32230132  |
+| 4 | Keen Steven Lim | 32230134 |
+| 5 | Darren Daniel | 32230138  |

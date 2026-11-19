@@ -22,6 +22,38 @@ Halaman `/api/docs` menampilkan lima operasi pada endpoint barang beserta skema 
 
 ![Dokumentasi Inventaris API pada Swagger UI](docs/screenshots/dokumentasi-api.png)
 
+## Daftar URL Endpoint
+
+Pastikan PostgreSQL aktif, lalu jalankan server dari folder project:
+
+```bash
+cd backend
+python3 app.py
+```
+
+Setelah server berjalan, URL berikut dapat diakses. Ganti `{id}` dengan id barang yang ada di database.
+
+| No | Metode | URL | Keterangan |
+| --- | --- | --- | --- |
+| 1 | GET | [http://127.0.0.1:5001/](http://127.0.0.1:5001/) | Halaman utama aplikasi |
+| 2 | GET | [http://127.0.0.1:5001/api/docs](http://127.0.0.1:5001/api/docs) | Halaman dokumentasi API (Swagger UI) |
+| 3 | GET | [http://127.0.0.1:5001/api/openapi.json](http://127.0.0.1:5001/api/openapi.json) | Kontrak API dalam format OpenAPI |
+| 4 | GET | [http://127.0.0.1:5001/api/products](http://127.0.0.1:5001/api/products) | Menampilkan semua barang |
+| 5 | GET | `http://127.0.0.1:5001/api/products/{id}` | Menampilkan satu barang |
+| 6 | POST | `http://127.0.0.1:5001/api/products` | Menambah barang |
+| 7 | PUT | `http://127.0.0.1:5001/api/products/{id}` | Mengubah barang |
+| 8 | DELETE | `http://127.0.0.1:5001/api/products/{id}` | Menghapus barang |
+
+URL dengan metode GET dapat dibuka langsung di browser. POST, PUT, dan DELETE diuji dengan Bruno: buka folder `bruno` sebagai collection, lalu pilih environment `local`. POST dan PUT memakai body JSON seperti ini:
+
+```json
+{
+  "product_name": "Mouse",
+  "category": "Elektronik",
+  "quantity": 10
+}
+```
+
 ## Anggota Kelompok
 
 | No | Nama | NIM |

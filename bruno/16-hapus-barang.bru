@@ -1,0 +1,19 @@
+meta {
+  name: Hapus barang
+  type: http
+  seq: 16
+}
+
+delete {
+  url: {{baseUrl}}/api/products/{{productId}}
+  body: none
+  auth: none
+}
+
+tests {
+  test("Hapus barang", function () {
+    expect(res.getStatus()).to.equal(200);
+    expect(res.getBody().message).to.equal("Product deleted successfully");
+    expect(res.getBody().data).to.equal(null);
+  });
+}

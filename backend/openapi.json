@@ -1,0 +1,246 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "Inventaris API",
+    "version": "1.0.0",
+    "description": "REST API untuk mengelola data barang pada Sistem Manajemen Inventaris. Setiap respons berisi field message dan data."
+  },
+  "servers": [{ "url": "/" }],
+  "tags": [{ "name": "Products", "description": "Pengelolaan data barang" }],
+  "paths": {
+    "/api/products": {
+      "get": {
+        "tags": ["Products"],
+        "summary": "Mengambil semua barang",
+        "operationId": "listProducts",
+        "responses": {
+          "200": {
+            "description": "Daftar barang berhasil diambil",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ProductListResponse" }
+              }
+            }
+          },
+          "500": { "$ref": "#/components/responses/ServerError" },
+          "503": { "$ref": "#/components/responses/DatabaseUnavailable" }
+        }
+      },
+      "post": {
+        "tags": ["Products"],
+        "summary": "Menambah barang",
+        "operationId": "createProduct",
+        "requestBody": { "$ref": "#/components/requestBodies/ProductBody" },
+        "responses": {
+          "201": {
+            "description": "Barang berhasil ditambahkan",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ProductResponse" }
+              }
+            }
+          },
+          "400": { "$ref": "#/components/responses/BadRequest" },
+          "500": { "$ref": "#/components/responses/ServerError" },
+          "503": { "$ref": "#/components/responses/DatabaseUnavailable" }
+        }
+      }
+    },
+    "/api/products/{product_id}": {
+      "parameters": [{ "$ref": "#/components/parameters/ProductId" }],
+      "get": {
+        "tags": ["Products"],
+        "summary": "Mengambil satu barang",
+        "operationId": "getProduct",
+        "responses": {
+          "200": {
+            "description": "Detail barang berhasil diambil",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ProductResponse" }
+              }
+            }
+          },
+          "404": { "$ref": "#/components/responses/NotFound" },
+          "500": { "$ref": "#/components/responses/ServerError" },
+          "503": { "$ref": "#/components/responses/DatabaseUnavailable" }
+        }
+      },
+      "put": {
+        "tags": ["Products"],
+        "summary": "Mengubah barang",
+        "operationId": "updateProduct",
+        "requestBody": { "$ref": "#/components/requestBodies/ProductBody" },
+        "responses": {
+          "200": {
+            "description": "Barang berhasil diubah",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ProductResponse" }
+              }
+            }
+          },
+          "400": { "$ref": "#/components/responses/BadRequest" },
+          "404": { "$ref": "#/components/responses/NotFound" },
+          "500": { "$ref": "#/components/responses/ServerError" },
+          "503": { "$ref": "#/components/responses/DatabaseUnavailable" }
+        }
+      },
+      "delete": {
+        "tags": ["Products"],
+        "summary": "Menghapus barang",
+        "operationId": "deleteProduct",
+        "responses": {
+          "200": {
+            "description": "Barang berhasil dihapus",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/MessageResponse" },
+                "example": {
+                  "message": "Product deleted successfully",
+                  "data": null
+                }
+              }
+            }
+          },
+          "404": { "$ref": "#/components/responses/NotFound" },
+          "500": { "$ref": "#/components/responses/ServerError" },
+          "503": { "$ref": "#/components/responses/DatabaseUnavailable" }
+        }
+      }
+    }
+  },
+  "components": {
+    "parameters": {
+      "ProductId": {
+        "name": "product_id",
+        "in": "path",
+        "required": true,
+        "description": "ID barang",
+        "schema": { "type": "integer", "minimum": 0 }
+      }
+    },
+    "requestBodies": {
+      "ProductBody": {
+        "required": true,
+        "content": {
+          "application/json": {
+            "schema": { "$ref": "#/components/schemas/ProductInput" }
+          }
+        }
+      }
+    },
+    "responses": {
+      "BadRequest": {
+        "description": "Data yang dikirim tidak valid",
+        "content": {
+          "application/json": {
+            "schema": { "$ref": "#/components/schemas/MessageResponse" },
+            "example": {
+              "message": "Quantity tidak boleh kurang dari 0",
+              "data": null
+            }
+          }
+        }
+      },
+      "NotFound": {
+        "description": "Barang tidak ditemukan",
+        "content": {
+          "application/json": {
+            "schema": { "$ref": "#/components/schemas/MessageResponse" },
+            "example": { "message": "Product not found", "data": null }
+          }
+        }
+      },
+      "ServerError": {
+        "description": "Kesalahan tidak terduga pada server",
+        "content": {
+          "application/json": {
+            "schema": { "$ref": "#/components/schemas/MessageResponse" },
+            "example": {
+              "message": "Terjadi kesalahan pada server",
+              "data": null
+            }
+          }
+        }
+      },
+      "DatabaseUnavailable": {
+        "description": "Server tidak dapat terhubung ke database",
+        "content": {
+          "application/json": {
+            "schema": { "$ref": "#/components/schemas/MessageResponse" },
+            "example": { "message": "Database tidak tersedia", "data": null }
+          }
+        }
+      }
+    },
+    "schemas": {
+      "ProductInput": {
+        "type": "object",
+        "required": ["product_name", "category", "quantity"],
+        "properties": {
+          "product_name": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 100,
+            "example": "Headset Gaming"
+          },
+          "category": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 100,
+            "example": "Aksesoris"
+          },
+          "quantity": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 2147483647,
+            "example": 10
+          }
+        }
+      },
+      "Product": {
+        "type": "object",
+        "required": ["id", "product_name", "category", "quantity", "created_at"],
+        "properties": {
+          "id": { "type": "integer", "example": 1 },
+          "product_name": { "type": "string", "example": "Laptop Lenovo" },
+          "category": { "type": "string", "example": "Elektronik" },
+          "quantity": { "type": "integer", "example": 5 },
+          "created_at": {
+            "type": "string",
+            "nullable": true,
+            "example": "Sat, 14 Nov 2026 07:34:54 GMT"
+          }
+        }
+      },
+      "ProductResponse": {
+        "type": "object",
+        "required": ["message", "data"],
+        "properties": {
+          "message": { "type": "string" },
+          "data": { "$ref": "#/components/schemas/Product" }
+        }
+      },
+      "ProductListResponse": {
+        "type": "object",
+        "required": ["message", "data"],
+        "properties": {
+          "message": { "type": "string" },
+          "data": {
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/Product" }
+          }
+        }
+      },
+      "MessageResponse": {
+        "type": "object",
+        "required": ["message", "data"],
+        "properties": {
+          "message": { "type": "string" },
+          "data": { "type": "object", "nullable": true, "example": null }
+        }
+      }
+    }
+  }
+}

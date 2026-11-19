@@ -81,3 +81,25 @@ def test_user_sees_database_outage(page, live_server, monkeypatch):
     expect(page.locator("#product-table")).to_contain_text(
         "Gagal mengambil data: Database tidak tersedia"
     )
+
+
+def test_api_docs_page_works_without_external_files(page, live_server):
+    requested_urls = []
+    page.on("request", lambda request: requested_urls.append(request.url))
+
+    page.goto(f"{live_server}/api/docs")
+
+    expect(page.get_by_role("heading", name="Inventaris API")).to_be_visible()
+    for method, path in [
+        ("GET", "/api/products"),
+        ("POST", "/api/products"),
+        ("GET", "/api/products/{product_id}"),
+        ("PUT", "/api/products/{product_id}"),
+        ("DELETE", "/api/products/{product_id}"),
+    ]:
+        operation = page.locator(".opblock-summary", has_text=method).filter(
+            has=page.get_by_text(path, exact=True)
+        )
+        expect(operation).to_be_visible()
+
+    assert all(url.startswith(live_server) for url in requested_urls)

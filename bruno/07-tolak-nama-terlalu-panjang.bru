@@ -1,0 +1,27 @@
+meta {
+  name: Tolak nama terlalu panjang
+  type: http
+  seq: 7
+}
+
+post {
+  url: {{baseUrl}}/api/products
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "product_name": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "category": "Aksesoris",
+    "quantity": 10
+  }
+}
+
+tests {
+  test("Tolak nama terlalu panjang", function () {
+    expect(res.getStatus()).to.equal(400);
+    expect(res.getBody().message).to.equal("Nama barang maksimal 100 karakter");
+    expect(res.getBody().data).to.equal(null);
+  });
+}

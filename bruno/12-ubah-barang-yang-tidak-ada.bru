@@ -1,0 +1,27 @@
+meta {
+  name: Ubah barang yang tidak ada
+  type: http
+  seq: 12
+}
+
+put {
+  url: {{baseUrl}}/api/products/999999999
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "product_name": "Headset Wireless",
+    "category": "Aksesoris",
+    "quantity": 12
+  }
+}
+
+tests {
+  test("Ubah barang yang tidak ada", function () {
+    expect(res.getStatus()).to.equal(404);
+    expect(res.getBody().message).to.equal("Product not found");
+    expect(res.getBody().data).to.equal(null);
+  });
+}

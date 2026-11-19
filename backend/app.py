@@ -2,7 +2,7 @@ import os
 
 import psycopg2
 from database import get_db_connection
-from flask import Flask, jsonify, render_template, request
+from flask import Flask, jsonify, render_template, request, send_from_directory
 from psycopg2.extras import RealDictCursor
 from werkzeug.exceptions import HTTPException
 
@@ -87,6 +87,16 @@ def handle_unexpected_error(error):
 @app.route("/")
 def home():
     return render_template("index.html")
+
+
+@app.route("/api/docs")
+def api_docs():
+    return render_template("api-docs.html")
+
+
+@app.route("/api/openapi.json")
+def openapi_spec():
+    return send_from_directory(base_dir, "openapi.json")
 
 
 # =====================================

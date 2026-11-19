@@ -1,0 +1,19 @@
+meta {
+  name: Metode tidak diizinkan
+  type: http
+  seq: 15
+}
+
+patch {
+  url: {{baseUrl}}/api/products/{{productId}}
+  body: none
+  auth: none
+}
+
+tests {
+  test("Metode tidak diizinkan", function () {
+    expect(res.getStatus()).to.equal(405);
+    expect(res.getBody().message).to.equal("Metode HTTP tidak diizinkan");
+    expect(res.getBody().data).to.equal(null);
+  });
+}

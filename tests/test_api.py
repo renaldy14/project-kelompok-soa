@@ -191,3 +191,55 @@ def test_unexpected_failure_returns_json_500(error_client, products_table):
     response = error_client.get("/api/products")
 
     assert_json_error(response, 500, "Terjadi kesalahan pada server")
+
+
+def openapi_spec(client):
+    response = client.get("/api/openapi.json")
+    assert response.status_code == 200
+    return response.get_json()
+
+
+def test_openapi_lists_every_product_operation(client):
+    spec = openapi_spec(client)
+
+    assert spec["openapi"].startswith("3.")
+    http_methods = {"get", "post", "put", "patch", "delete"}
+    operations = {
+        path: http_methods.intersection(item)
+        for path, item in spec["paths"].items()
+    }
+
+    assert operations == {
+        "/api/products": {"get", "post"},
+        "/api/products/{product_id}": {"get", "put", "delete"},
+    }
+
+
+@pytest.mark.parametrize(
+    ("path", "method", "statuses"),
+    [
+        ("/api/products", "get", {"200", "500", "503"}),
+        ("/api/products", "post", {"201", "400", "500", "503"}),
+        ("/api/products/{product_id}", "get", {"200", "404", "500", "503"}),
+        (
+            "/api/products/{product_id}",
+            "put",
+            {"200", "400", "404", "500", "503"},
+        ),
+        ("/api/products/{product_id}", "delete", {"200", "404", "500", "503"}),
+    ],
+)
+def test_openapi_documents_response_statuses(client, path, method, statuses):
+    operation = openapi_spec(client)["paths"][path][method]
+
+    assert set(operation["responses"]) == statuses
+
+
+def test_openapi_documents_input_limits(client):
+    schema = openapi_spec(client)["components"]["schemas"]["ProductInput"]
+
+    assert set(schema["required"]) == {"product_name", "category", "quantity"}
+    assert schema["properties"]["product_name"]["maxLength"] == 100
+    assert schema["properties"]["category"]["maxLength"] == 100
+    assert schema["properties"]["quantity"]["minimum"] == 0
+    assert schema["properties"]["quantity"]["maximum"] == 2147483647

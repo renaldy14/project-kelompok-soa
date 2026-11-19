@@ -1,0 +1,19 @@
+meta {
+  name: Endpoint tidak ditemukan
+  type: http
+  seq: 14
+}
+
+get {
+  url: {{baseUrl}}/api/tidak-ada
+  body: none
+  auth: none
+}
+
+tests {
+  test("Endpoint tidak ditemukan", function () {
+    expect(res.getStatus()).to.equal(404);
+    expect(res.getBody().message).to.equal("Endpoint tidak ditemukan");
+    expect(res.getBody().data).to.equal(null);
+  });
+}

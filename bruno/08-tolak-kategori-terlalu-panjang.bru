@@ -1,0 +1,27 @@
+meta {
+  name: Tolak kategori terlalu panjang
+  type: http
+  seq: 8
+}
+
+post {
+  url: {{baseUrl}}/api/products
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "product_name": "Headset Gaming",
+    "category": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "quantity": 10
+  }
+}
+
+tests {
+  test("Tolak kategori terlalu panjang", function () {
+    expect(res.getStatus()).to.equal(400);
+    expect(res.getBody().message).to.equal("Kategori maksimal 100 karakter");
+    expect(res.getBody().data).to.equal(null);
+  });
+}

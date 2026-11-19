@@ -1,0 +1,19 @@
+meta {
+  name: Pastikan barang terhapus
+  type: http
+  seq: 17
+}
+
+get {
+  url: {{baseUrl}}/api/products/{{productId}}
+  body: none
+  auth: none
+}
+
+tests {
+  test("Pastikan barang terhapus", function () {
+    expect(res.getStatus()).to.equal(404);
+    expect(res.getBody().message).to.equal("Product not found");
+    expect(res.getBody().data).to.equal(null);
+  });
+}

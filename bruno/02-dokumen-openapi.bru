@@ -1,0 +1,18 @@
+meta {
+  name: Dokumen OpenAPI
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{baseUrl}}/api/openapi.json
+  body: none
+  auth: none
+}
+
+tests {
+  test("Dokumen OpenAPI", function () {
+    expect(res.getStatus()).to.equal(200);
+    expect(res.getBody().info.title).to.equal('Inventaris API');
+  });
+}

@@ -1,0 +1,27 @@
+meta {
+  name: Tolak quantity terlalu besar
+  type: http
+  seq: 10
+}
+
+post {
+  url: {{baseUrl}}/api/products
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "product_name": "Headset Gaming",
+    "category": "Aksesoris",
+    "quantity": 2147483648
+  }
+}
+
+tests {
+  test("Tolak quantity terlalu besar", function () {
+    expect(res.getStatus()).to.equal(400);
+    expect(res.getBody().message).to.equal("Quantity maksimal 2147483647");
+    expect(res.getBody().data).to.equal(null);
+  });
+}

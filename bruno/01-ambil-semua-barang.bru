@@ -1,0 +1,19 @@
+meta {
+  name: Ambil semua barang
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{baseUrl}}/api/products
+  body: none
+  auth: none
+}
+
+tests {
+  test("Ambil semua barang", function () {
+    expect(res.getStatus()).to.equal(200);
+    expect(res.getBody().message).to.equal("Daftar barang berhasil diambil");
+    expect(res.getBody().data).to.be.an('array');
+  });
+}

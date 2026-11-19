@@ -1,0 +1,32 @@
+meta {
+  name: Tambah barang
+  type: http
+  seq: 3
+}
+
+post {
+  url: {{baseUrl}}/api/products
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "product_name": "Headset Gaming",
+    "category": "Aksesoris",
+    "quantity": 10
+  }
+}
+
+script:post-response {
+  bru.setVar("productId", res.getBody().data.id);
+}
+
+tests {
+  test("Tambah barang", function () {
+    expect(res.getStatus()).to.equal(201);
+    expect(res.getBody().message).to.equal("Product created successfully");
+    expect(res.getBody().data.product_name).to.equal('Headset Gaming');
+    expect(res.getBody().data.quantity).to.equal(10);
+  });
+}

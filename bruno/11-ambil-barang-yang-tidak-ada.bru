@@ -1,0 +1,19 @@
+meta {
+  name: Ambil barang yang tidak ada
+  type: http
+  seq: 11
+}
+
+get {
+  url: {{baseUrl}}/api/products/999999999
+  body: none
+  auth: none
+}
+
+tests {
+  test("Ambil barang yang tidak ada", function () {
+    expect(res.getStatus()).to.equal(404);
+    expect(res.getBody().message).to.equal("Product not found");
+    expect(res.getBody().data).to.equal(null);
+  });
+}

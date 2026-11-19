@@ -1,0 +1,122 @@
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Sistem Manajemen Inventaris</title>
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/style.css') }}"
+    />
+  </head>
+  <body>
+    <header class="header">
+      <div class="container">
+        <h1>Sistem Manajemen Inventaris</h1>
+        <p>Kelola data barang dengan mudah dan terorganisir.</p>
+      </div>
+    </header>
+
+    <main class="container">
+      <section class="panel">
+        <div class="section-heading">
+          <div>
+            <h2 id="form-title">Tambah Barang</h2>
+            <p>Masukkan informasi barang yang ingin disimpan.</p>
+          </div>
+        </div>
+
+        <form id="product-form">
+          <input type="hidden" id="product-id" />
+
+          <div class="form-grid">
+            <div class="form-group">
+              <label for="product-name">Nama Barang</label>
+              <input
+                type="text"
+                id="product-name"
+                placeholder="Contoh: Laptop Lenovo"
+                required
+              />
+            </div>
+
+            <div class="form-group">
+              <label for="category">Kategori</label>
+              <input
+                type="text"
+                id="category"
+                placeholder="Contoh: Elektronik"
+                required
+              />
+            </div>
+
+            <div class="form-group">
+              <label for="quantity">Jumlah</label>
+              <input
+                type="number"
+                id="quantity"
+                min="0"
+                step="1"
+                placeholder="Masukkan jumlah"
+                required
+              />
+            </div>
+          </div>
+
+          <div class="form-actions">
+            <button type="submit" id="submit-button" class="button primary">
+              Simpan Barang
+            </button>
+            <button
+              type="button"
+              id="cancel-button"
+              class="button secondary hidden"
+            >
+              Batal
+            </button>
+          </div>
+        </form>
+      </section>
+
+      <section class="panel">
+        <div class="section-heading">
+          <div>
+            <h2>Daftar Barang</h2>
+            <p>Data barang yang tersimpan dalam database.</p>
+          </div>
+          <button type="button" id="refresh-button" class="button secondary">
+            Muat Ulang
+          </button>
+        </div>
+
+        <div id="message" class="message hidden" role="status"></div>
+
+        <div class="table-wrapper">
+          <table>
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Nama Barang</th>
+                <th>Kategori</th>
+                <th>Jumlah</th>
+                <th>Tanggal Dibuat</th>
+                <th>Aksi</th>
+              </tr>
+            </thead>
+            <tbody id="product-table">
+              <tr>
+                <td colspan="6" class="empty-state">Memuat data...</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+    </main>
+
+    <footer>
+      <p>© 2026 Sistem Manajemen Inventaris</p>
+    </footer>
+
+    <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+  </body>
+</html>

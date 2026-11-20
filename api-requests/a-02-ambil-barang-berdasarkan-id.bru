@@ -1,11 +1,11 @@
 meta {
-  name: Ambil barang berdasarkan ID
+  name: a-02 Ambil barang berdasarkan ID
   type: http
-  seq: 4
+  seq: 2
 }
 
 get {
-  url: {{baseUrl}}/api/products/{{productId}}
+  url: http://127.0.0.1:5001/api/products/{{productId}}
   body: none
   auth: none
 }
@@ -13,7 +13,7 @@ get {
 tests {
   test("Ambil barang berdasarkan ID", function () {
     expect(res.getStatus()).to.equal(200);
+    expect(res.getBody().message).to.equal("Detail barang berhasil diambil");
     expect(res.getBody().data.id).to.equal(bru.getVar('productId'));
-    expect(res.getBody().data.product_name).to.equal('Headset Gaming');
   });
 }

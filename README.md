@@ -44,7 +44,7 @@ Setelah server berjalan, URL berikut dapat diakses. Ganti `{id}` dengan id baran
 | 7 | PUT | `http://127.0.0.1:5001/api/products/{id}` | Mengubah barang |
 | 8 | DELETE | `http://127.0.0.1:5001/api/products/{id}` | Menghapus barang |
 
-URL dengan metode GET dapat dibuka langsung di browser. POST, PUT, dan DELETE diuji dengan Bruno: buka folder `api-requests` sebagai collection, lalu pilih environment `local`. POST dan PUT memakai body JSON seperti ini:
+URL dengan metode GET dapat dibuka langsung di browser. POST, PUT, dan DELETE diuji dengan Bruno: buka folder `api-requests` sebagai collection. POST dan PUT memakai body JSON seperti ini:
 
 ```json
 {
@@ -53,6 +53,15 @@ URL dengan metode GET dapat dibuka langsung di browser. POST, PUT, dan DELETE di
   "quantity": 10
 }
 ```
+
+Request di folder `api-requests` dibagi menjadi dua kelompok. Kelompok `a` berisi lima operasi utama Product Service, sedangkan kelompok `b` berisi pengujian tambahan, misalnya input yang ditolak, barang yang tidak ada, dan dokumen OpenAPI. Nomor urutnya bersambung, jadi kelompok `b` dimulai dari 06.
+
+| Kelompok | Request | Isi pengujian |
+| --- | --- | --- |
+| a | a-01 sampai a-05 | Ambil semua barang, ambil barang berdasarkan ID, tambah, ubah, dan hapus barang |
+| b | b-06 sampai b-17 | Pastikan barang terhapus, dokumen OpenAPI, validasi input, barang yang tidak ada, endpoint tidak ditemukan, dan metode tidak diizinkan |
+
+Jalankan request kelompok `a` secara berurutan. a-01 mengisi `productId` dengan id barang pertama supaya a-02 bisa langsung dijalankan. a-03 lalu mengganti `productId` dengan id barang yang baru ditambahkan, sehingga a-04 dan a-05 mengubah dan menghapus barang uji tersebut, bukan data asli.
 
 ## Anggota Kelompok
 

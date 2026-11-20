@@ -1,11 +1,11 @@
 meta {
-  name: Tolak quantity terlalu besar
+  name: b-11 Tolak quantity negatif
   type: http
-  seq: 10
+  seq: 11
 }
 
 post {
-  url: {{baseUrl}}/api/products
+  url: http://127.0.0.1:5001/api/products
   body: json
   auth: none
 }
@@ -14,14 +14,14 @@ body:json {
   {
     "product_name": "Headset Gaming",
     "category": "Aksesoris",
-    "quantity": 2147483648
+    "quantity": -1
   }
 }
 
 tests {
-  test("Tolak quantity terlalu besar", function () {
+  test("Tolak quantity negatif", function () {
     expect(res.getStatus()).to.equal(400);
-    expect(res.getBody().message).to.equal("Quantity maksimal 2147483647");
+    expect(res.getBody().message).to.equal("Quantity tidak boleh kurang dari 0");
     expect(res.getBody().data).to.equal(null);
   });
 }

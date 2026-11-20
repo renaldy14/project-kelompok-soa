@@ -1,13 +1,21 @@
 meta {
-  name: Ambil semua barang
+  name: a-01 Ambil semua barang
   type: http
   seq: 1
 }
 
 get {
-  url: {{baseUrl}}/api/products
+  url: http://127.0.0.1:5001/api/products
   body: none
   auth: none
+}
+
+script:post-response {
+  const products = res.getBody().data;
+
+  if (Array.isArray(products) && products.length > 0) {
+    bru.setVar("productId", products[0].id);
+  }
 }
 
 tests {

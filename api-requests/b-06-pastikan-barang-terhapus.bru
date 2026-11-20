@@ -1,17 +1,17 @@
 meta {
-  name: Ambil barang yang tidak ada
+  name: b-06 Pastikan barang terhapus
   type: http
-  seq: 11
+  seq: 6
 }
 
 get {
-  url: {{baseUrl}}/api/products/999999999
+  url: http://127.0.0.1:5001/api/products/{{productId}}
   body: none
   auth: none
 }
 
 tests {
-  test("Ambil barang yang tidak ada", function () {
+  test("Pastikan barang terhapus", function () {
     expect(res.getStatus()).to.equal(404);
     expect(res.getBody().message).to.equal("Product not found");
     expect(res.getBody().data).to.equal(null);
